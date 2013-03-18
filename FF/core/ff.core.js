@@ -250,9 +250,9 @@
 	// FF.timestat 时间分析
 	FF.timestat = {};
 	FF.timestat.libs = {};
-	FF.timestat.loadTime = (typeof(_ym_page_loadtime) === 'number') ? _ym_page_loadtime: +new Date();
+	FF.timestat.loadTime = (typeof(_ym_page_loadtime) === 'number') ? _ym_page_loadtime: + new Date();
 	FF.timestat.add = function(name) {
-		this.libs[name] = +new Date() - this.loadTime;
+		this.libs[name] = + new Date() - this.loadTime;
 	};
 	FF.timestat.get = function(name) {
 		return this.libs[name] || 0;
