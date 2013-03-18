@@ -27,7 +27,7 @@
 	FF.debugIndex = 0;
 	FF.debug = function(a, b) {
 		if (!this.debugMode) return;
-		if (typeof(console) == 'undefined') {
+		if (typeof(console) === 'undefined') {
 			FF.debug.log(((Date.prototype.format) ? (new Date()).format('hh:nn:ss.S') : (++FF.debugIndex)) + ', ' + a + ' = ' + b);
 		} else {
 			if (console && console.log) console.log(((Date.prototype.format) ? (new Date()).format('hh:nn:ss.S') : (++FF.debugIndex)) + ', ' + a, '=', b);
@@ -47,7 +47,7 @@
 		$('#_ym_debuglog textarea').val('');
 	};
 	FF.debug.createDOM = function() {
-		if ($('#_ym_debuglog').size() == 0) {
+		if ($('#_ym_debuglog').size() === 0) {
 			var _html = '<div id="_ym_debuglog" style="position:fixed;bottom:0;left:0;right:0;_position:absolute;_bottom:auto;_top:0;padding:5px 0 5px 5px;border:solid 5px #666;background:#eee;z-index:1000;"><textarea style="font-size:12px;line-height:16px;display:block;background:#eee;border:none;width:100%;height:80px;"></textarea><a style="text-decoration:none;display:block;height:80px;width:20px;text-align:center;line-height:16px;padding:5px 0;_padding:6px 0;background:#666;color:#fff;position:absolute;right:-5px;bottom:0;" href="#">关闭调试器</a></div>';
 			$('body').append(_html);
 			$('#_ym_debuglog a').click(function() {
@@ -66,18 +66,18 @@
 			var url = service.join(',');
 			var urlsize = service.length;
 			var status = FF.loader.checkFileLoader(url);
-			if (status == urlsize + 1) {
-				if (typeof(action) == 'function') action();
+			if (status === urlsize + 1) {
+				if (typeof(action) === 'function') action.call(this);
 			} else if (status > 0) {
 				FF.loader.addExecute(url, action);
-			} else if (status == 0) {
+			} else if (status === 0) {
 				FF.loader.addExecute(url, action);
 				FF.loader.fileLoader[url] = 1;
 				FF.debug('开始加载JS', url);
 				for (var i = 0; i < urlsize; i++) {
 					FF.load(service[i], function() {
 						FF.loader.fileLoader[url]++;
-						if (FF.loader.fileLoader[url] == urlsize + 1) {
+						if (FF.loader.fileLoader[url] === urlsize + 1) {
 							FF.debug('完成加载JS', url);
 							FF.loader.execute(url);
 						}
@@ -107,27 +107,27 @@
 		FF.loader.serviceBase = path;
 	};
 	FF.load.run = function(service, act, params) {
-		var action = (typeof(act) == 'string') ? (function() {
+		var action = (typeof(act) === 'string') ? (function() {
 			try {
 				var o = eval('FF.' + service);
-				if (o && o[act]) o[act](params);
+				if (o && o[act]) o[act].apply(this, params);
 			} catch(e) {}
 		}) : (act || function() {});
 		if (FF.loader.checkService(service)) {
-			action();
+			action.call(this);
 			return;
 		}
 		var url = FF.loader.getServiceUrl(service);
 		var status = FF.loader.checkFileLoader(url);
 		// status:-1异常, 0未加载, 1开始加载, 2完成加载
 		if (status == 2) {
-			action();
+			action.call(this);
 		} else if (status == 1) {
 			FF.loader.addExecute(url, action);
 		} else if (status == 0) {
 			if ($('script[src=' + url + ']').size() > 0) {
 				FF.loader.fileLoader[url] = 2;
-				action();
+				action.call(this);
 			} else {
 				FF.loader.addExecute(url, action);
 				FF.loader.addScript(service);
@@ -145,7 +145,7 @@
 	})();
 	FF.loader.serviceLibs = {};
 	FF.loader.checkFullUrl = function(url) {
-		return (url.indexOf('/') == 0 || url.indexOf('http://') == 0);
+		return (url.indexOf('/') === 0 || url.indexOf('http://') === 0);
 	};
 	FF.loader.checkService = function(service) {
 		if (this.checkFullUrl(service)) return false;
@@ -236,13 +236,13 @@
 		}
 		script.onload = script.onreadystatechange = function() {
 			if (!this.readyState || this.readyState == "loaded" || this.readyState == "complete") {
-				if (onSuccess) onSuccess();
+				if (onSuccess) onSuccess.call(this);
 				script.onload = script.onreadystatechange = null;
 				if (!script.keepScriptTag) head.removeChild(script);
 			}
 		};
 		script.onerror = function() {
-			if (onError) onError();
+			if (onError) onError.call(this);
 		};
 		head.appendChild(script);
 	};
@@ -250,9 +250,9 @@
 	// FF.timestat 时间分析
 	FF.timestat = {};
 	FF.timestat.libs = {};
-	FF.timestat.loadTime = (typeof(_ym_page_loadtime) == 'number') ? _ym_page_loadtime: new Date().getTime();
+	FF.timestat.loadTime = (typeof(_ym_page_loadtime) === 'number') ? _ym_page_loadtime: +new Date();
 	FF.timestat.add = function(name) {
-		this.libs[name] = new Date().getTime() - this.loadTime;
+		this.libs[name] = +new Date() - this.loadTime;
 	};
 	FF.timestat.get = function(name) {
 		return this.libs[name] || 0;
